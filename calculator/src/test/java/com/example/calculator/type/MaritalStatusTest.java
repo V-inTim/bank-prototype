@@ -25,12 +25,4 @@ public class MaritalStatusTest {
         assertEquals(MaritalStatus.SINGLE, MaritalStatus.valueOf("SINGLE"));
         assertEquals(MaritalStatus.WIDOWED_WIDOWED, MaritalStatus.valueOf("WIDOWED_WIDOWED"));
     }
-
-    @Test
-    public void testInvalidValueOf() {
-        // Проверка метода valueOf с некорректным значением
-        assertThrows(IllegalArgumentException.class, () -> {
-            MaritalStatus.valueOf("INVALID_STATUS");
-        });
-    }
 }

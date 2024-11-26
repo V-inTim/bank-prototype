@@ -17,7 +17,6 @@ public class AdultValidatorTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         validator = new AdultValidator();
         context = mock(ConstraintValidatorContext.class);
     }

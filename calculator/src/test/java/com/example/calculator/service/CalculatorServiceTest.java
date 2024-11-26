@@ -2,11 +2,9 @@ package com.example.calculator.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CalculatorServiceTest {
 

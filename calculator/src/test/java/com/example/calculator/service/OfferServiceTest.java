@@ -27,7 +27,6 @@ public class OfferServiceTest {
     private LoanStatementRequestDto requestData;
 
     @BeforeEach void setUp(){
-        MockitoAnnotations.openMocks(this);
         requestData = new LoanStatementRequestDto(
                 new BigDecimal("100000"),
                 60,
