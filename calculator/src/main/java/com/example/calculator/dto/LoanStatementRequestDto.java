@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Data
 public class LoanStatementRequestDto {
     @NotNull(message = "Сумма кредита должна быть передана.")
-    @DecimalMin(value = "20000.00", message = "Сумма кредита должна быть больше или равна 20000.")
+    @DecimalMin(value = "20000.00", message = "Сумма кредита должна быть не меньше 20000.")
     private BigDecimal amount;
 
     @NotNull(message = "Срок кредита должен быть передан.")
