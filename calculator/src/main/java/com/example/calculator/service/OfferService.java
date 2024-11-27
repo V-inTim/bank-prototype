@@ -38,10 +38,8 @@ public class OfferService {
         UUID uuid = UUID.randomUUID();
 
         BigDecimal rate = scoringService.preEvaluate(isInsuranceEnabled, isSalaryClient);
-
-        BigDecimal monthlyPayment = calculatorService.calculateMonthlyPayment(
-                requestData.getAmount(), rate, requestData.getTerm());
-        BigDecimal totalAmount = calculatorService.calculateTotalPayment(monthlyPayment, requestData.getTerm());
+        BigDecimal totalAmount = calculatorService.calculateTotalPayment(requestData.getAmount(), isInsuranceEnabled);
+        BigDecimal monthlyPayment = calculatorService.calculateMonthlyPayment(totalAmount, rate, requestData.getTerm());
 
         return LoanOfferDto.builder()
                 .statementId(uuid)
