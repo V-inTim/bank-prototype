@@ -2,6 +2,7 @@ package com.example.calculator.dto;
 
 import com.example.calculator.type.Gender;
 import com.example.calculator.type.MaritalStatus;
+import com.example.calculator.validation.annotation.EnumNamePattern;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,10 @@ public class ScoringDataDto {
     @Pattern(regexp = "^[a-zA-Z]{2,30}$", message = "Отчество - от 2 до 30 латинских букв.")
     String middleName; // может и не быть
     @NotNull
-    @Pattern(regexp = "^MALE|FEMALE|NON_BINARY$", message = "Гендер один из 3 заявленных.")
+    @EnumNamePattern(
+            regexp = "MALE|FEMALE|NON_BINARY",
+            message = "Гендер один из 3 заявленных."
+    )
     Gender gender;
     @NotNull
     LocalDate birthdate;
@@ -48,7 +52,10 @@ public class ScoringDataDto {
     @NotNull
     String passportIssueBranch;
     @NotNull
-    @Pattern(regexp = "^MARRIED|DIVORCED|SINGLE|WIDOWED_WIDOWED$", message = "Статус один из 4 заявленных.")
+    @EnumNamePattern(
+            regexp = "MARRIED|DIVORCED|SINGLE|WIDOWED_WIDOWED",
+            message = "Статус один из 4 заявленных."
+    )
     MaritalStatus maritalStatus;
     @NotNull
     Integer dependentAmount;

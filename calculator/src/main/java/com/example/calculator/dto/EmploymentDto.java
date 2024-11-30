@@ -2,6 +2,8 @@ package com.example.calculator.dto;
 
 import com.example.calculator.type.EmploymentStatus;
 import com.example.calculator.type.EmploymentPosition;
+import com.example.calculator.type.MaritalStatus;
+import com.example.calculator.validation.annotation.EnumNamePattern;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,8 +18,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class EmploymentDto {
     @NotNull
-    @Pattern(
-            regexp = "^UNEMPLOYED|SELF_EMPLOYED|BUSINESS_OWNER|EMPLOYED$",
+    @EnumNamePattern(
+            regexp = "UNEMPLOYED|SELF_EMPLOYED|BUSINESS_OWNER|EMPLOYED",
             message = "Статус должен быть один из заявленных."
     )
     EmploymentStatus employmentStatus;
@@ -27,9 +29,9 @@ public class EmploymentDto {
     @DecimalMin(value = "0.00", message = "Сумма кредита должна быть отрицательной.")
     BigDecimal salary;
     @NotNull
-    @Pattern(
-            regexp = "^WORKER|MID_MANAGER|TOP_MANAGER|OWNER$",
-            message = "Статус должен быть один из заявленных."
+    @EnumNamePattern(
+            regexp = "WORKER|MID_MANAGER|TOP_MANAGER|OWNER",
+            message = "Позиция должна быть одна из заявленных."
     )
     EmploymentPosition position;
     @NotNull
