@@ -1,7 +1,11 @@
 package com.example.calculator.service;
 
+import com.example.calculator.dto.CreditDto;
 import com.example.calculator.dto.LoanOfferDto;
 import com.example.calculator.dto.LoanStatementRequestDto;
+import com.example.calculator.dto.ScoringDataDto;
+import com.example.calculator.dto.PaymentScheduleElementDto;
+import com.example.calculator.exception.ScoringException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.UUID;
 public class OfferService {
     ScoringService scoringService;
     CalculatorService calculatorService;
+
     @Autowired
     public OfferService(ScoringService scoringService, CalculatorService calculatorService) {
 
@@ -21,7 +26,7 @@ public class OfferService {
         this.calculatorService = calculatorService;
     }
 
-    public List<LoanOfferDto> generateOffers(LoanStatementRequestDto requestData){
+    public List<LoanOfferDto> generateOffers(LoanStatementRequestDto requestData) {
         List<LoanOfferDto> offers = new ArrayList<>();
 
         offers.add(createOffer(requestData, true, true));
@@ -34,7 +39,7 @@ public class OfferService {
 
     private LoanOfferDto createOffer(LoanStatementRequestDto requestData,
                                      boolean isInsuranceEnabled,
-                                     boolean isSalaryClient){
+                                     boolean isSalaryClient) {
         UUID uuid = UUID.randomUUID();
 
         BigDecimal rate = scoringService.preEvaluate(isInsuranceEnabled, isSalaryClient);
@@ -51,5 +56,30 @@ public class OfferService {
                 .isInsuranceEnabled(isInsuranceEnabled)
                 .isSalaryClient(isSalaryClient)
                 .build();
+    }
+
+    public CreditDto calculateCredit(ScoringDataDto requestData) throws ScoringException {
+        BigDecimal rate = scoringService.evaluate(requestData);
+        BigDecimal totalAmount = calculatorService.calculateTotalPayment(
+                requestData.getAmount(), requestData.getIsInsuranceEnabled()
+        );
+        BigDecimal monthlyPayment = calculatorService.calculateMonthlyPayment(totalAmount, rate, requestData.getTerm());
+        BigDecimal psk = calculatorService.calculatePsk(monthlyPayment, requestData.getTerm());
+        List<PaymentScheduleElementDto> schedule = calculatorService.calculatePaymentSchedule(
+                monthlyPayment, rate, psk, requestData.getTerm()
+        );
+        return CreditDto.builder()
+                .psk(psk)
+                .amount(totalAmount)
+                .term(requestData.getTerm())
+                .rate(rate)
+                .monthlyPayment(monthlyPayment)
+                .isInsuranceEnabled(requestData.getIsInsuranceEnabled())
+                .isSalaryClient(requestData.getIsSalaryClient())
+                .paymentSchedule(schedule)
+                .build();
+    }
+
+    public void performOperation(Object any) {
     }
 }
