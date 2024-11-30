@@ -1,6 +1,6 @@
 package com.example.calculator.dto;
 
-import com.example.calculator.validator.Adult;
+import com.example.calculator.validation.annotation.Adult;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
