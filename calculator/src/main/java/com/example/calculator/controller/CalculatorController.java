@@ -1,6 +1,7 @@
 package com.example.calculator.controller;
 
 import com.example.calculator.dto.LoanStatementRequestDto;
+import com.example.calculator.dto.ScoringDataDto;
 import com.example.calculator.service.OfferService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +29,13 @@ public class CalculatorController {
     }
 
     @PostMapping(value = "/offers")
-    public ResponseEntity<?> makeOffers(@Valid @RequestBody LoanStatementRequestDto requestData,
-                                        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> makeOffers(@Valid @RequestBody LoanStatementRequestDto requestData) {
         return new ResponseEntity<>(offerService.generateOffers(requestData), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/calc")
+    public ResponseEntity<?> calculateCredit(@Valid @RequestBody ScoringDataDto requestData) {
+        return new ResponseEntity<>(offerService.calculateCredit(requestData), HttpStatus.OK);
     }
 
 }
