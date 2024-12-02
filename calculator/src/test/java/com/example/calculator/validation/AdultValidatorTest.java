@@ -1,7 +1,7 @@
-package com.example.calculator.validator;
+package com.example.calculator.validation;
+import com.example.calculator.validation.validator.AdultValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
