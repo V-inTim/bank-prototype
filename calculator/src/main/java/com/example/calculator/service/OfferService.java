@@ -6,11 +6,14 @@ import com.example.calculator.dto.LoanStatementRequestDto;
 import com.example.calculator.dto.ScoringDataDto;
 import com.example.calculator.dto.PaymentScheduleElementDto;
 import com.example.calculator.exception.ScoringException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +21,7 @@ import java.util.UUID;
 public class OfferService {
     ScoringService scoringService;
     CalculatorService calculatorService;
+    private static final Logger logger = LoggerFactory.getLogger(OfferService.class);
 
     @Autowired
     public OfferService(ScoringService scoringService, CalculatorService calculatorService) {
@@ -33,6 +37,9 @@ public class OfferService {
         offers.add(createOffer(requestData, true, false));
         offers.add(createOffer(requestData, false, true));
         offers.add(createOffer(requestData, false, false));
+
+        offers.sort(Comparator.comparing(LoanOfferDto::getRate).reversed());
+        logger.debug("Сгенерированный List<LoanOfferDto>: {}", offers);
 
         return offers;
     }
@@ -68,6 +75,7 @@ public class OfferService {
         List<PaymentScheduleElementDto> schedule = calculatorService.calculatePaymentSchedule(
                 monthlyPayment, rate, psk, requestData.getTerm()
         );
+
         return CreditDto.builder()
                 .psk(psk)
                 .amount(totalAmount)

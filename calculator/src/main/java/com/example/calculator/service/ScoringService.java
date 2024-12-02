@@ -5,6 +5,8 @@ import com.example.calculator.dto.ScoringDataDto;
 import com.example.calculator.exception.ScoringException;
 import com.example.calculator.type.Gender;
 import com.example.calculator.type.MaritalStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.time.Period;
 public class ScoringService {
     @Value("${app.rate}")
     String standartRate;
+
+    private static final Logger logger = LoggerFactory.getLogger(ScoringService.class);
 
     public BigDecimal preEvaluate(boolean isInsuranceEnabled,
                                   boolean isSalaryClient){
@@ -30,6 +34,7 @@ public class ScoringService {
         if (rate.compareTo(new BigDecimal("0")) <= 0){
             return new BigDecimal("0.02");
         }
+        logger.debug("preEvaluate rate, {}", rate);
         return rate;
     }
 
@@ -41,6 +46,8 @@ public class ScoringService {
         rate = evaluateMaritalStatus(rate, scoringData.getMaritalStatus());
         if (rate.compareTo(new BigDecimal("0.02")) <= 0)
             return new BigDecimal("0.02");
+
+        logger.debug("evaluate rate, {}", rate);
         return rate;
     }
 
