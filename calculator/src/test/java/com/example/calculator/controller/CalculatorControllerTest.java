@@ -1,8 +1,14 @@
 package com.example.calculator.controller;
 
+import com.example.calculator.dto.EmploymentDto;
 import com.example.calculator.dto.LoanOfferDto;
 import com.example.calculator.dto.LoanStatementRequestDto;
+import com.example.calculator.dto.ScoringDataDto;
 import com.example.calculator.service.OfferService;
+import com.example.calculator.type.EmploymentPosition;
+import com.example.calculator.type.EmploymentStatus;
+import com.example.calculator.type.Gender;
+import com.example.calculator.type.MaritalStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +82,30 @@ public class CalculatorControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.length()").value(4));
+
+        ScoringDataDto scoringDataDto = new ScoringDataDto(
+                new BigDecimal("100000"),
+                12,
+                "Tim", "Fill", "Din",
+                Gender.MALE,
+                LocalDate.of(1980, 1,1),
+                "0000", "000000",
+                LocalDate.of(2012, 10, 12),
+                "none",
+                MaritalStatus.SINGLE,
+                34, // "dependentAmount"
+                new EmploymentDto(
+                        EmploymentStatus.BUSINESS_OWNER,
+                        "2134541",
+                        new BigDecimal(20000), // salary
+                        EmploymentPosition.TOP_MANAGER,
+                        18, 12
+
+                ),
+                "accountNumber",
+                true,
+                false
+        );
     }
 
     @Test
