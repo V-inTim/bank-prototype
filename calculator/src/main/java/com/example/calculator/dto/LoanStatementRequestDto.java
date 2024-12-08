@@ -56,12 +56,12 @@ public class LoanStatementRequestDto {
     @Adult
     private LocalDate birthdate;
 
-    @Schema(description = "Есть ли страховка", example = "true")
+    @Schema(description = "Серия паспорта", example = "true")
     @NotNull(message = "Серия паспорта должно быть передано.")
     @Pattern(regexp = "^[0-9]{4}$", message = "Серия - 4 символа.")
     private String passportSeries;
 
-    @Schema(description = "Есть ли постоянная зарплата", example = "false")
+    @Schema(description = "Номер паспорта ", example = "false")
     @NotNull(message = "Номер паспорта должно быть передано.")
     @Pattern(regexp = "^[0-9]{6}$", message = "Номер - 6 символов.")
     private String passportNumber;

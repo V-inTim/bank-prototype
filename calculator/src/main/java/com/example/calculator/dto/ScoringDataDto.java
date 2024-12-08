@@ -95,9 +95,10 @@ public class ScoringDataDto {
     @NotNull
     String accountNumber;
 
-    @Schema(description = "Личный номер", example = "8920435436")
+    @Schema(description = "Есть ли страховка", example = "true")
     @NotNull
     Boolean isInsuranceEnabled;
+    @Schema(description = "Зарплатный ли клиент", example = "false")
     @NotNull
     Boolean isSalaryClient;
 }

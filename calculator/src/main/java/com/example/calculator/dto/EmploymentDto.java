@@ -38,10 +38,10 @@ public class EmploymentDto {
             message = "Позиция должна быть одна из заявленных."
     )
     EmploymentPosition position;
-    @Schema(description = "Есть ли страховка", example = "true")
+    @Schema(description = "Рабочий опыт общий", example = "true")
     @NotNull
     Integer workExperienceTotal;
-    @Schema(description = "Есть ли постоянная зарплата", example = "false")
+    @Schema(description = "Рабочий опыт текущий", example = "false")
     @NotNull
     Integer workExperienceCurrent;
 }
