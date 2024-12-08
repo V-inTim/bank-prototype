@@ -3,13 +3,10 @@ package com.example.calculator.validation;
 import com.example.calculator.type.Gender;
 import com.example.calculator.type.MaritalStatus;
 import com.example.calculator.validation.annotation.EnumNamePattern;
-import com.example.calculator.validation.validator.AdultValidator;
 import com.example.calculator.validation.validator.EnumNamePatternValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

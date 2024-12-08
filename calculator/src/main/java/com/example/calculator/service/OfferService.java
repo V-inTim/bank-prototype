@@ -87,7 +87,4 @@ public class OfferService {
                 .paymentSchedule(schedule)
                 .build();
     }
-
-    public void performOperation(Object any) {
-    }
 }

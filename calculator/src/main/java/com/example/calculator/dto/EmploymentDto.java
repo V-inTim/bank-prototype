@@ -2,12 +2,10 @@ package com.example.calculator.dto;
 
 import com.example.calculator.type.EmploymentStatus;
 import com.example.calculator.type.EmploymentPosition;
-import com.example.calculator.type.MaritalStatus;
 import com.example.calculator.validation.annotation.EnumNamePattern;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
