@@ -1,5 +1,6 @@
 package com.example.deal.entity;
 
+import com.example.deal.type.ApplicationStatus;
 import com.example.deal.type.ChangeType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class StatusHistory {
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
     private LocalDateTime time;
     @Enumerated(EnumType.STRING)
     private ChangeType changeType;
