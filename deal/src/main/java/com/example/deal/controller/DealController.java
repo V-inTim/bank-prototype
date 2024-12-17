@@ -30,11 +30,12 @@ public class DealController {
         return new ResponseEntity<>(offers, HttpStatus.CREATED);
     }
 
-//    @PostMapping(value = "/offer/select")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
-//
-//    }
+    @PostMapping(value = "/offer/select")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
+        dealService.applyOffer(requestData);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 //
 //    @PostMapping(value = "/calculate/{statementId}")
 //    @ResponseStatus(HttpStatus.NO_CONTENT)
