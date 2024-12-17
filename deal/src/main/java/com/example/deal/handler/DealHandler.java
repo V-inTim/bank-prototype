@@ -1,6 +1,7 @@
 package com.example.deal.handler;
 
 import com.example.deal.exception.CalculatorErrorException;
+import com.example.deal.exception.DbException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class DealHandler  {
+public class DealHandler{
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<Map<String, String>> handleInvalidFormatException(InvalidFormatException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -31,7 +32,11 @@ public class DealHandler  {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(CalculatorErrorException.class)
-    public ResponseEntity<Map<String, Object>> handleNotValidException(CalculatorErrorException ex, WebRequest request){
+    public ResponseEntity<Map<String, Object>> handleCalculatorErrorException(CalculatorErrorException ex, WebRequest request){
         return new ResponseEntity<>(ex.getResponseBody(), ex.getStatusCode());
+    }
+    @ExceptionHandler(DbException.class)
+    public ResponseEntity<Map<String, String>> handleDbException(DbException ex, WebRequest request){
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), ex.getStatusCode());
     }
 }
