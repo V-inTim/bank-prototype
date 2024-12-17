@@ -8,8 +8,8 @@ import java.util.Map;
 
 @Getter
 public class CalculatorErrorException extends RuntimeException{
-    private HttpStatusCode statusCode;
-    private Map<String, Object> responseBody;
+    final private HttpStatusCode statusCode;
+    final private Map<String, Object> responseBody;
     public CalculatorErrorException(HttpStatusCode statusCode, Map<String, Object> responseBody) {
         super("HTTP Error: " + statusCode.toString());
         this.statusCode = statusCode;
