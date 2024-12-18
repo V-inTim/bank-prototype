@@ -161,11 +161,13 @@ public class DealServiceTest {
     public void testSuccessCalculateCredit() {
         // заготовки
         UUID statementId = UUID.randomUUID();
-        FinishRegistrationRequestDto dto = FinishRegistrationRequestDto.builder().build();
+        FinishRegistrationRequestDto dto = FinishRegistrationRequestDto.builder().
+                employment(new EmploymentDto()).build();
 
+        Client client = Client.builder().passport(new Passport()).build();
         Statement statement = Statement.builder()
                 .statementId(statementId)
-                .clientId(Client.builder().passport(new Passport()).build())
+                .clientId(client)
                 .appliedOffer(new AppliedOffer())
                 .status(ApplicationStatus.APPROVED)
                 .statusHistory(new ArrayList<>())
