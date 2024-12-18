@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -36,11 +37,14 @@ public class DealController {
         dealService.applyOffer(requestData);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-//
-//    @PostMapping(value = "/calculate/{statementId}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void calculateCredit(@Valid @RequestBody FinishRegistrationRequestDto requestData) {
-//
-//    }
+
+    @PostMapping(value = "/calculate/{statementId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> calculateCredit(
+            @PathVariable UUID statementId,
+            @Valid @RequestBody FinishRegistrationRequestDto requestData) {
+        dealService.calculateCredit(requestData, statementId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
 }
