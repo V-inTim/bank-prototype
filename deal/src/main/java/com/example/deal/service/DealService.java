@@ -13,6 +13,8 @@ import com.example.deal.repository.StatementRepository;
 import com.example.deal.type.ApplicationStatus;
 import com.example.deal.type.ChangeType;
 import com.example.deal.type.CreditStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class DealService {
     private final OfferMapper offerMapper;
     private final CreditMapper creditMapper;
     private final CalculatorClient calculatorClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(DealService.class);
 
     @Autowired
     public DealService(ClientRepository clientRepository,
@@ -55,6 +59,7 @@ public class DealService {
     public List<LoanOfferDto> createStatement(LoanStatementRequestDto requestData){
         Client client = clientMapper.dtoToClient(requestData);
         clientRepository.save(client);
+        logger.debug("createStatement, save client");
 
         Statement statement = Statement.builder()
                 .creationDate(LocalDateTime.now())
@@ -62,6 +67,7 @@ public class DealService {
                 .status(ApplicationStatus.PREAPPROVAL)
                 .build();
         statementRepository.save(statement);
+        logger.debug("createStatement, save statement");
 
         List<LoanOfferDto> offers = calculatorClient.requestOffers(requestData);
         offers.forEach(offer -> offer.setStatementId(statement.getStatementId()));
@@ -73,8 +79,11 @@ public class DealService {
         UUID id = dto.getStatementId();
         // находим, если есть
         Optional<Statement> optionalStatement = statementRepository.findById(id);
-        if (optionalStatement.isEmpty())
+        if (optionalStatement.isEmpty()){
+            logger.debug("applyOffer, statement DbException");
             throw new DbException("Ресурс с данным id не сущетсвует.", HttpStatus.BAD_REQUEST);
+        }
+        logger.debug("applyOffer, find statement");
         Statement statement = optionalStatement.get();
         // заполняем
         statement.setStatus(ApplicationStatus.APPROVED);
@@ -91,17 +100,23 @@ public class DealService {
         statement.setAppliedOffer(offerMapper.dtoToAppliedOffer(dto));
         // сохраняем изменения
         statementRepository.save(statement);
+        logger.debug("applyOffer, save statement");
     }
 
     public void calculateCredit(FinishRegistrationRequestDto dto, UUID statementId) throws DbException{
 
         Optional<Statement> optionalStatement = statementRepository.findById(statementId);
-        if (optionalStatement.isEmpty())
+        if (optionalStatement.isEmpty()){
+            logger.debug("calculateCredit, statement DbException");
             throw new DbException("Ресурс с данным id не сущетсвует.", HttpStatus.BAD_REQUEST);
+        }
+        logger.debug("calculateCredit, find statement");
         Statement statement = optionalStatement.get();
         ApplicationStatus status = statement.getStatus();
-        if (status != ApplicationStatus.APPROVED)
+        if (status != ApplicationStatus.APPROVED){
+            logger.debug("calculateCredit, statement.status DbException");
             throw  new DbException("В заявке неподходящий статус.", HttpStatus.BAD_REQUEST);
+        }
 
         Client client = statement.getClientId();
         AppliedOffer offer = statement.getAppliedOffer();
@@ -131,6 +146,7 @@ public class DealService {
         credit.setCreditStatus(CreditStatus.CALCULATED);
 
         credit = creditRepository.save(credit);
+        logger.debug("calculateCredit, save credit");
 
         List<StatusHistory> history = statement.getStatusHistory();
         history.add(StatusHistory.builder()
@@ -141,6 +157,7 @@ public class DealService {
         statement.setStatus(ApplicationStatus.CC_APPROVED);
         statement.setCreditId(credit);
         statementRepository.save(statement);
+        logger.debug("calculateCredit, save statement");
     }
 
 
