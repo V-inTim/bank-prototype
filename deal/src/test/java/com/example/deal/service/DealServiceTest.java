@@ -1,15 +1,14 @@
 package com.example.deal.service;
 
 import com.example.deal.client.CalculatorClient;
-import com.example.deal.dto.LoanOfferDto;
-import com.example.deal.dto.LoanStatementRequestDto;
-import com.example.deal.entity.AppliedOffer;
-import com.example.deal.entity.Client;
-import com.example.deal.entity.Statement;
+import com.example.deal.dto.*;
+import com.example.deal.entity.*;
 import com.example.deal.exception.DbException;
 import com.example.deal.mapper.ClientMapper;
+import com.example.deal.mapper.CreditMapper;
 import com.example.deal.mapper.OfferMapper;
 import com.example.deal.repository.ClientRepository;
+import com.example.deal.repository.CreditRepository;
 import com.example.deal.repository.StatementRepository;
 import com.example.deal.type.ApplicationStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,14 +36,17 @@ public class DealServiceTest {
 
     @Mock
     private ClientRepository clientRepository;
-
     @Mock
     private StatementRepository statementRepository;
+    @Mock
+    private CreditRepository creditRepository;
 
     @Mock
     private ClientMapper clientMapper;
     @Mock
     private OfferMapper offerMapper;
+    @Mock
+    private CreditMapper creditMapper;
 
     @Mock
     private CalculatorClient calculatorClient;
@@ -150,8 +153,43 @@ public class DealServiceTest {
 
         // Проверяем, что выбрасывается исключение
         DbException exception = assertThrows(DbException.class, () -> dealService.applyOffer(loanOfferDto));
-        assertEquals("Resource with the given ID does not exist.", exception.getMessage());
+        assertEquals("Ресурс с данным id не сущетсвует.", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
 
+    }
+    @Test
+    public void testSuccessCalculateCredit() {
+        // заготовки
+        UUID statementId = UUID.randomUUID();
+        FinishRegistrationRequestDto dto = FinishRegistrationRequestDto.builder().build();
+
+        Statement statement = Statement.builder()
+                .statementId(statementId)
+                .clientId(Client.builder().passport(new Passport()).build())
+                .appliedOffer(new AppliedOffer())
+                .status(ApplicationStatus.APPROVED)
+                .statusHistory(new ArrayList<>())
+                .build();
+
+        Credit credit = new Credit();
+        // настройки
+        when(statementRepository.findById(statementId)).thenReturn(Optional.of(statement));
+        when(calculatorClient.requestCalc(any(ScoringDataDto.class))).thenReturn(new CreditDto());
+        when(creditMapper.dtoToCredit(any(CreditDto.class))).thenReturn(credit);
+        when(creditRepository.save(credit)).thenReturn(credit);
+        when(statementRepository.save(statement)).thenReturn(statement);
+
+        // вызов метода
+        dealService.calculateCredit(dto, statementId);
+
+        ArgumentCaptor<Statement> statementCaptor = ArgumentCaptor.forClass(Statement.class);
+
+        // проверка на финальном этапе
+
+        verify(statementRepository).save(statementCaptor.capture());
+        Statement savedStatement = statementCaptor.getValue();
+        assertEquals(ApplicationStatus.CC_APPROVED, savedStatement.getStatus());
+        assertEquals(credit, savedStatement.getCreditId());
+        assertNotNull(savedStatement.getStatusHistory());
     }
 }

@@ -1,42 +1,34 @@
 package com.example.deal.controller;
 
+import com.example.deal.dto.EmploymentDto;
+import com.example.deal.dto.FinishRegistrationRequestDto;
 import com.example.deal.dto.LoanOfferDto;
 import com.example.deal.dto.LoanStatementRequestDto;
 import com.example.deal.service.DealService;
+import com.example.deal.type.Gender;
+import com.example.deal.type.MaritalStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 
@@ -137,5 +129,26 @@ public class DealControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.rate").value("rate должен быть передан."));  // Проверяем ошибку в email
 
+    }
+
+    @Test
+    public void testSuccessCalculateCredit() throws Exception {
+
+        FinishRegistrationRequestDto dto = FinishRegistrationRequestDto.builder()
+                .gender(Gender.MALE)
+                .passportIssueBranch("-")
+                .passportIssueDate(LocalDate.of(2012, 7, 8))
+                .accountNumber("-")
+                .maritalStatus(MaritalStatus.MARRIED)
+                .employment(new EmploymentDto())
+                .dependentAmount(345)
+                .build();
+
+        doNothing().when(dealService).applyOffer(any(LoanOfferDto.class));
+
+        mockMvc.perform(post("/deal/calculate/"+UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNoContent());
     }
 }
