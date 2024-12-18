@@ -1,7 +1,6 @@
 package com.example.deal.exception;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 import java.util.Map;
