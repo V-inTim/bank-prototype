@@ -1,7 +1,6 @@
 package com.example.deal.entity;
 
 import com.example.deal.type.CreditStatus;
-
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +31,9 @@ public class Credit {
 
     @Column(name = "term")
     private Integer term;
+
+    @Column(name = "monthly_payment")
+    private BigDecimal monthlyPayment;
 
     @Column(name = "rate")
     private BigDecimal rate;
