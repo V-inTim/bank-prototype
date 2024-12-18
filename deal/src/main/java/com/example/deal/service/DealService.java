@@ -58,6 +58,7 @@ public class DealService {
 
     public List<LoanOfferDto> createStatement(LoanStatementRequestDto requestData){
         Client client = clientMapper.dtoToClient(requestData);
+
         clientRepository.save(client);
         logger.debug("createStatement, save client");
 
@@ -104,7 +105,7 @@ public class DealService {
     }
 
     public void calculateCredit(FinishRegistrationRequestDto dto, UUID statementId) throws DbException{
-
+        // поиск statement
         Optional<Statement> optionalStatement = statementRepository.findById(statementId);
         if (optionalStatement.isEmpty()){
             logger.debug("calculateCredit, statement DbException");
@@ -117,10 +118,28 @@ public class DealService {
             logger.debug("calculateCredit, statement.status DbException");
             throw  new DbException("В заявке неподходящий статус.", HttpStatus.BAD_REQUEST);
         }
-
+        // заполнение client
         Client client = statement.getClientId();
-        AppliedOffer offer = statement.getAppliedOffer();
+        client.setGender(dto.getGender());
+        client.setMaritalStatus(dto.getMaritalStatus());
+        client.setDependentAmount(dto.getDependentAmount());
+        client.setAccountNumber(dto.getAccountNumber());
 
+        EmploymentDto employmentDto = dto.getEmployment();
+        Employment employment = Employment.builder()
+                .status(employmentDto.getEmploymentStatus())
+                .employerInn(employmentDto.getEmployerINN())
+                .salary(employmentDto.getSalary())
+                .position(employmentDto.getPosition())
+                .workExperienceTotal(employmentDto.getWorkExperienceTotal())
+                .workExperienceCurrent(employmentDto.getWorkExperienceCurrent())
+                .build();
+        client.setEmployment(employment);
+
+        clientRepository.save(client);
+
+        AppliedOffer offer = statement.getAppliedOffer();
+        // заполнение ScoringDataDto и получение creditDto
         ScoringDataDto scoringDataDto = ScoringDataDto.builder()
                 .firstName(client.getFirstName())
                 .lastName(client.getLastName())
@@ -142,12 +161,14 @@ public class DealService {
 
         CreditDto creditDto = calculatorClient.requestCalc(scoringDataDto);
 
+        // сохранение credit
         Credit credit = creditMapper.dtoToCredit(creditDto);
         credit.setCreditStatus(CreditStatus.CALCULATED);
 
         credit = creditRepository.save(credit);
         logger.debug("calculateCredit, save credit");
 
+        // сохранение statement
         List<StatusHistory> history = statement.getStatusHistory();
         history.add(StatusHistory.builder()
                 .status(ApplicationStatus.CC_APPROVED)
