@@ -1,18 +1,18 @@
 package com.example.deal.service;
 
 import com.example.deal.client.CalculatorClient;
-import com.example.deal.dto.LoanOfferDto;
-import com.example.deal.dto.LoanStatementRequestDto;
-import com.example.deal.entity.Client;
-import com.example.deal.entity.Statement;
-import com.example.deal.entity.StatusHistory;
+import com.example.deal.dto.*;
+import com.example.deal.entity.*;
 import com.example.deal.exception.DbException;
 import com.example.deal.mapper.ClientMapper;
+import com.example.deal.mapper.CreditMapper;
 import com.example.deal.mapper.OfferMapper;
 import com.example.deal.repository.ClientRepository;
+import com.example.deal.repository.CreditRepository;
 import com.example.deal.repository.StatementRepository;
 import com.example.deal.type.ApplicationStatus;
 import com.example.deal.type.ChangeType;
+import com.example.deal.type.CreditStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,21 +28,27 @@ import java.util.UUID;
 public class DealService {
     private final ClientRepository clientRepository;
     private final StatementRepository statementRepository;
+    private final CreditRepository creditRepository;
     private final ClientMapper clientMapper;
     private final OfferMapper offerMapper;
+    private final CreditMapper creditMapper;
     private final CalculatorClient calculatorClient;
 
     @Autowired
     public DealService(ClientRepository clientRepository,
                        StatementRepository statementRepository,
+                       CreditRepository creditRepository,
                        ClientMapper clientMapper,
                        OfferMapper offerMapper,
+                       CreditMapper creditMapper,
                        CalculatorClient calculatorClient) {
 
         this.clientRepository = clientRepository;
+        this.creditRepository = creditRepository;
+        this.statementRepository = statementRepository;
         this.clientMapper = clientMapper;
         this.offerMapper = offerMapper;
-        this.statementRepository = statementRepository;
+        this.creditMapper = creditMapper;
         this.calculatorClient = calculatorClient;
     }
 
@@ -68,7 +74,7 @@ public class DealService {
         // находим, если есть
         Optional<Statement> optionalStatement = statementRepository.findById(id);
         if (optionalStatement.isEmpty())
-            throw new DbException("Resource with the given ID does not exist.", HttpStatus.BAD_REQUEST);
+            throw new DbException("Ресурс с данным id не сущетсвует.", HttpStatus.BAD_REQUEST);
         Statement statement = optionalStatement.get();
         // заполняем
         statement.setStatus(ApplicationStatus.APPROVED);
@@ -86,5 +92,57 @@ public class DealService {
         // сохраняем изменения
         statementRepository.save(statement);
     }
+
+    public void calculateCredit(FinishRegistrationRequestDto dto, UUID statementId) throws DbException{
+
+        Optional<Statement> optionalStatement = statementRepository.findById(statementId);
+        if (optionalStatement.isEmpty())
+            throw new DbException("Ресурс с данным id не сущетсвует.", HttpStatus.BAD_REQUEST);
+        Statement statement = optionalStatement.get();
+        ApplicationStatus status = statement.getStatus();
+        if (status != ApplicationStatus.APPROVED)
+            throw  new DbException("В заявке неподходящий статус.", HttpStatus.BAD_REQUEST);
+
+        Client client = statement.getClientId();
+        AppliedOffer offer = statement.getAppliedOffer();
+
+        ScoringDataDto scoringDataDto = ScoringDataDto.builder()
+                .firstName(client.getFirstName())
+                .lastName(client.getLastName())
+                .middleName(client.getMiddleName())
+                .birthdate(client.getBirthDate())
+                .gender(dto.getGender())
+                .accountNumber(dto.getAccountNumber())
+                .employment(dto.getEmployment())
+                .maritalStatus(dto.getMaritalStatus())
+                .passportSeries(client.getPassport().getSeries())
+                .passportNumber(client.getPassport().getNumber())
+                .passportIssueDate(dto.getPassportIssueDate())
+                .passportIssueBranch(dto.getPassportIssueBranch())
+                .term(offer.getTerm())
+                .amount(offer.getRequestedAmount())
+                .dependentAmount(dto.getDependentAmount())
+                .isInsuranceEnabled(offer.getIsInsuranceEnabled())
+                .isSalaryClient(offer.getIsSalaryClient()).build();
+
+        CreditDto creditDto = calculatorClient.requestCalc(scoringDataDto);
+
+        Credit credit = creditMapper.dtoToCredit(creditDto);
+        credit.setCreditStatus(CreditStatus.CALCULATED);
+
+        credit = creditRepository.save(credit);
+
+        List<StatusHistory> history = statement.getStatusHistory();
+        history.add(StatusHistory.builder()
+                .status(ApplicationStatus.CC_APPROVED)
+                .changeType(ChangeType.AUTOMATIC)
+                .time(LocalDateTime.now()).build());
+        statement.setStatusHistory(history);
+        statement.setStatus(ApplicationStatus.CC_APPROVED);
+        statement.setCreditId(credit);
+        statementRepository.save(statement);
+    }
+
+
 
 }
