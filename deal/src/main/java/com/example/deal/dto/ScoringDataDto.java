@@ -3,7 +3,6 @@ package com.example.deal.dto;
 import com.example.deal.type.Gender;
 import com.example.deal.type.MaritalStatus;
 import com.example.deal.validation.annotation.EnumNamePattern;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

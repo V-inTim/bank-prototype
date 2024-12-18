@@ -42,7 +42,7 @@ public class CalculatorClient {
     public List<LoanOfferDto> requestOffers(LoanStatementRequestDto dto){
 
         ParameterizedTypeReference<List<LoanOfferDto>> responseType =
-                new ParameterizedTypeReference<List<LoanOfferDto>>() {};
+                new ParameterizedTypeReference<>() {};
         try {
             return restClient.post()
                     .uri("/offers")
