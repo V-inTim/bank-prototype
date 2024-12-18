@@ -8,8 +8,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.util.UUID;
-
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
     ClientMapper INSTANCE = Mappers.getMapper(ClientMapper.class);
@@ -29,13 +27,10 @@ public interface ClientMapper {
     Client dtoToClient(LoanStatementRequestDto dto);
 
     default Passport createPassport(LoanStatementRequestDto dto){
-        return Passport.builder()
-                .passport(UUID.randomUUID())
-                .series(dto.getPassportSeries())
+        return Passport.builder().series(dto.getPassportSeries())
                 .number(dto.getPassportNumber()).build();
     }
     default Employment createEmployment(){
-        return Employment.builder()
-                .employmentId(UUID.randomUUID()).build();
+        return Employment.builder().build();
     }
 }
