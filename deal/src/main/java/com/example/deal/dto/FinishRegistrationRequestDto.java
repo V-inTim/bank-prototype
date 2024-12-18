@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+@Schema(description = "Финальные данные")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

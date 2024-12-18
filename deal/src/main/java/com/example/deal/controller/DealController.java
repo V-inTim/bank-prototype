@@ -4,6 +4,12 @@ import com.example.deal.dto.FinishRegistrationRequestDto;
 import com.example.deal.dto.LoanOfferDto;
 import com.example.deal.dto.LoanStatementRequestDto;
 import com.example.deal.service.DealService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +33,15 @@ public class DealController {
         this.dealService = dealService;
     }
 
+    @Operation(summary = "Создать statement", description = "Создать, сохранить statement")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = LoanOfferDto.class)))),
+            @ApiResponse(responseCode = "400", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
+    })
     @PostMapping(value = "/statement")
     public ResponseEntity<?> createStatement(@Valid @RequestBody LoanStatementRequestDto requestData) {
         logger.info("Запрос на /statement: {}", requestData);
@@ -37,6 +52,15 @@ public class DealController {
         return new ResponseEntity<>(offers, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Установить offer", description = "Сохранить выбранный offer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "400", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
+    })
     @PostMapping(value = "/offer/select")
     public ResponseEntity<?> applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
         logger.info("Запрос на /offer/select: {}", requestData);
@@ -47,6 +71,15 @@ public class DealController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Посчитать кредит", description = "Получить сумму кредита и сохранить")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "400", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
+    })
     @PostMapping(value = "/calculate/{statementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> calculateCredit(
