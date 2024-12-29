@@ -4,12 +4,15 @@ package com.example.deal.dto;
 import com.example.deal.validation.annotation.Adult;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.*;
-
-import lombok.*;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -57,12 +60,12 @@ public class LoanStatementRequestDto {
     @Adult
     private LocalDate birthdate;
 
-    @Schema(description = "Серия паспорта", example = "true")
+    @Schema(description = "Серия паспорта", example = "2345")
     @NotNull(message = "Серия паспорта должно быть передано.")
     @Pattern(regexp = "^[0-9]{4}$", message = "Серия - 4 символа.")
     private String passportSeries;
 
-    @Schema(description = "Номер паспорта ", example = "false")
+    @Schema(description = "Номер паспорта ", example = "345466")
     @NotNull(message = "Номер паспорта должно быть передано.")
     @Pattern(regexp = "^[0-9]{6}$", message = "Номер - 6 символов.")
     private String passportNumber;
