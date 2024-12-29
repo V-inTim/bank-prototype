@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public class DbException extends RuntimeException{
-    final private HttpStatusCode statusCode;
+    private final HttpStatusCode statusCode;
     public DbException(String message, HttpStatusCode statusCode) {
         super(message);
         this.statusCode = statusCode;
