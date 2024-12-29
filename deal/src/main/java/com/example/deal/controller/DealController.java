@@ -43,7 +43,7 @@ public class DealController {
                     schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
     })
     @PostMapping(value = "/statement")
-    public ResponseEntity<?> createStatement(@Valid @RequestBody LoanStatementRequestDto requestData) {
+    public ResponseEntity<List<LoanOfferDto>> createStatement(@Valid @RequestBody LoanStatementRequestDto requestData) {
         logger.info("Запрос на /statement: {}", requestData);
 
         List<LoanOfferDto> offers = dealService.createStatement(requestData);
@@ -62,7 +62,7 @@ public class DealController {
                     schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
     })
     @PostMapping(value = "/offer/select")
-    public ResponseEntity<?> applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
+    public ResponseEntity<Void> applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
         logger.info("Запрос на /offer/select: {}", requestData);
 
         dealService.applyOffer(requestData);
@@ -82,7 +82,7 @@ public class DealController {
     })
     @PostMapping(value = "/calculate/{statementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<?> calculateCredit(
+    public ResponseEntity<Void> calculateCredit(
             @PathVariable UUID statementId,
             @Valid @RequestBody FinishRegistrationRequestDto requestData) {
         logger.info("Запрос на /calculate/{statementId}: {}", requestData);
