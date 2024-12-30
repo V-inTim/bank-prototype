@@ -3,6 +3,12 @@ package com.example.statement.controller;
 import com.example.statement.dto.LoanOfferDto;
 import com.example.statement.dto.LoanStatementRequestDto;
 import com.example.statement.service.StatementService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +35,15 @@ public class StatementController {
     }
 
     @PostMapping("")
+    @Operation(summary = "Создать statement", description = "Прескоринг + запрос на расчёт возможных условий кредита")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = LoanOfferDto.class)))),
+            @ApiResponse(responseCode = "400", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
+    })
     public ResponseEntity<List<LoanOfferDto>> createStatement(@Valid @RequestBody LoanStatementRequestDto requestDto){
         logger.info("Запрос на /statement");
 
@@ -39,6 +54,15 @@ public class StatementController {
     }
 
     @PostMapping("/offer")
+    @Operation(summary = "Выбор одного из предложений", description = "Выбор одного из предложений")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Void.class))),
+            @ApiResponse(responseCode = "400", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(type = "object", example = "{\"field\":\"error\"}"))),
+    })
     public ResponseEntity<Void> applyOffer(@Valid @RequestBody LoanOfferDto requestDto){
         logger.info("Запрос на /statement/offer");
 
