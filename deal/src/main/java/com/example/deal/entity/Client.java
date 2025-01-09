@@ -2,7 +2,6 @@ package com.example.deal.entity;
 
 import com.example.deal.type.Gender;
 import com.example.deal.type.MaritalStatus;
-
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,7 +48,7 @@ public class Client {
     @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;
 
-    @Column(name = "depend_amount")
+    @Column(name = "dependent_amount")
     private Integer dependentAmount;
 
     @Column(name = "passport_id", columnDefinition = "jsonb")
