@@ -5,6 +5,7 @@ import com.example.deal.dto.LoanOfferDto;
 import com.example.deal.dto.LoanStatementRequestDto;
 import com.example.deal.dto.ScoringDataDto;
 import com.example.deal.exception.CalculatorErrorException;
+import com.example.deal.service.RefusalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,17 +23,23 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class CalculatorClient {
     private final RestClient restClient;
-    @Autowired
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    private final RefusalService refusalService;
 
 
 
     @Autowired
-    public CalculatorClient(@Value("${calculator.url}") String baseUrl, RestClient.Builder restClientBuilder){
+    public CalculatorClient(@Value("${calculator.url}") String baseUrl,
+                            RestClient.Builder restClientBuilder, ObjectMapper objectMapper,
+                            RefusalService refusalService){
+        this.objectMapper = objectMapper;
+        this.refusalService = refusalService;
 
         this.restClient = restClientBuilder
                 .baseUrl(baseUrl)
@@ -66,7 +73,7 @@ public class CalculatorClient {
         }
     }
 
-    public CreditDto requestCalc(ScoringDataDto dto){
+    public CreditDto requestCalc(ScoringDataDto dto, UUID statementId){
 
         try {
             return restClient.post()
@@ -76,6 +83,8 @@ public class CalculatorClient {
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                         HttpStatusCode statusCode = response.getStatusCode();
+                        if (statusCode == HttpStatus.BAD_REQUEST)
+                            refusalService.refuse(statementId);
                         Map<String, Object> responseBody = convertBody(response);
                         throw new CalculatorErrorException(statusCode, responseBody);
                     })
