@@ -1,7 +1,8 @@
 package com.example.deal.handler;
 
 import com.example.deal.exception.CalculatorErrorException;
-import com.example.deal.exception.DbException;
+import com.example.deal.exception.IncorrectSesCodeException;
+import com.example.deal.exception.StatementException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +43,13 @@ public class DealHandler{
         logger.debug("DealHandler, CalculatorErrorException");
         return new ResponseEntity<>(ex.getResponseBody(), ex.getStatusCode());
     }
-    @ExceptionHandler(DbException.class)
-    public ResponseEntity<Map<String, String>> handleDbException(DbException ex, WebRequest request){
+    @ExceptionHandler(StatementException.class)
+    public ResponseEntity<Map<String, String>> handleDbException(StatementException ex, WebRequest request){
         logger.debug("DealHandler, DbException");
-        return new ResponseEntity<>(Map.of("message", ex.getMessage()), ex.getStatusCode());
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(IncorrectSesCodeException.class)
+    public ResponseEntity<Map<String, String>> handleIncorrectSesCodeException(IncorrectSesCodeException ex, WebRequest request){
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
