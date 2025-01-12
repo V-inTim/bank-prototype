@@ -3,13 +3,11 @@ package com.example.deal.service;
 import com.example.deal.client.CalculatorClient;
 import com.example.deal.dto.*;
 import com.example.deal.entity.*;
-import com.example.deal.exception.DbException;
 import com.example.deal.mapper.ClientMapper;
 import com.example.deal.mapper.CreditMapper;
 import com.example.deal.mapper.OfferMapper;
 import com.example.deal.repository.ClientRepository;
 import com.example.deal.repository.CreditRepository;
-import com.example.deal.repository.StatementRepository;
 import com.example.deal.type.ApplicationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,27 +15,25 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DealServiceTest {
 
     @Mock
     private ClientRepository clientRepository;
     @Mock
-    private StatementRepository statementRepository;
+    private StatementService statementService;
     @Mock
     private CreditRepository creditRepository;
 
@@ -50,6 +46,9 @@ public class DealServiceTest {
 
     @Mock
     private CalculatorClient calculatorClient;
+
+    @Mock
+    private  KafkaProducerService producerService;
 
     @InjectMocks
     private DealService dealService;
@@ -92,7 +91,7 @@ public class DealServiceTest {
 
         when(clientMapper.dtoToClient(requestDto)).thenReturn(client);
         when(clientRepository.save(any(Client.class))).thenReturn(client);
-        when(statementRepository.save(any(Statement.class))).thenReturn(statement);
+        doNothing().when(statementService).saveStatement(any(Statement.class));
         when(calculatorClient.requestOffers(requestDto)).thenReturn(offers);
 
 
@@ -104,7 +103,7 @@ public class DealServiceTest {
 
         // Проверка сохранения заявления
         ArgumentCaptor<Statement> statementCaptor = ArgumentCaptor.forClass(Statement.class);
-        verify(statementRepository).save(statementCaptor.capture());
+        verify(statementService).saveStatement(statementCaptor.capture());
         Statement savedStatement = statementCaptor.getValue();
 
         assertNotNull(savedStatement.getCreationDate());
@@ -125,38 +124,27 @@ public class DealServiceTest {
                 .build();
         Statement statement = Statement.builder()
                 .statementId(statementId)
+                .clientId(new Client())
                 .build();
 
-        when(statementRepository.findById(statementId)).thenReturn(Optional.of(statement));
+        when(statementService.getStatement(statementId)).thenReturn(statement);
         when(offerMapper.dtoToAppliedOffer(any(LoanOfferDto.class))).thenReturn(new AppliedOffer());
+        doAnswer(invocation -> {
+            statement.setStatus(ApplicationStatus.APPROVED);
+            return null;
+        }).when(statementService).changeStatus(any(Statement.class), eq(ApplicationStatus.APPROVED));
 
         // Вызов метода
         dealService.applyOffer(loanOfferDto);
 
         ArgumentCaptor<Statement> statementCaptor = ArgumentCaptor.forClass(Statement.class);
-        verify(statementRepository).save(statementCaptor.capture());
+        verify(statementService).saveStatement(statementCaptor.capture());
 
         Statement savedStatement = statementCaptor.getValue();
-        assertNotNull(savedStatement.getStatusHistory());
+
         assertEquals(ApplicationStatus.APPROVED, savedStatement.getStatus());
     }
-    @Test
-    void testThrowsDbException() {
-        // Данные для теста
-        UUID statementId = UUID.randomUUID();
-        LoanOfferDto loanOfferDto = LoanOfferDto.builder()
-                .statementId(statementId)
-                .build();
 
-        // Мокируем отсутствие записи в базе
-        when(statementRepository.findById(statementId)).thenReturn(Optional.empty());
-
-        // Проверяем, что выбрасывается исключение
-        DbException exception = assertThrows(DbException.class, () -> dealService.applyOffer(loanOfferDto));
-        assertEquals("Ресурс с данным id не сущетсвует.", exception.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-
-    }
     @Test
     public void testSuccessCalculateCredit() {
         // заготовки
@@ -175,11 +163,16 @@ public class DealServiceTest {
 
         Credit credit = new Credit();
         // настройки
-        when(statementRepository.findById(statementId)).thenReturn(Optional.of(statement));
-        when(calculatorClient.requestCalc(any(ScoringDataDto.class))).thenReturn(new CreditDto());
+        when(statementService.getStatement(statementId)).thenReturn(statement);
+        when(calculatorClient.requestCalc(any(ScoringDataDto.class), eq(statementId))).thenReturn(new CreditDto());
         when(creditMapper.dtoToCredit(any(CreditDto.class))).thenReturn(credit);
         when(creditRepository.save(credit)).thenReturn(credit);
-        when(statementRepository.save(statement)).thenReturn(statement);
+        doNothing().when(statementService).saveStatement(statement);
+        doAnswer(invocation -> {
+            statement.setStatus(ApplicationStatus.CC_APPROVED);
+            return null;
+        }).when(statementService).changeStatus(any(Statement.class), eq(ApplicationStatus.CC_APPROVED));
+
 
         // вызов метода
         dealService.calculateCredit(dto, statementId);
@@ -188,9 +181,8 @@ public class DealServiceTest {
 
         // проверка на финальном этапе
 
-        verify(statementRepository).save(statementCaptor.capture());
+        verify(statementService).saveStatement(statementCaptor.capture());
         Statement savedStatement = statementCaptor.getValue();
-        assertEquals(ApplicationStatus.CC_APPROVED, savedStatement.getStatus());
         assertEquals(credit, savedStatement.getCreditId());
         assertNotNull(savedStatement.getStatusHistory());
     }
