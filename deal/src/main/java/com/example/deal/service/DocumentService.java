@@ -81,11 +81,11 @@ public class DocumentService {
 
     public void verifyCode(UUID statementId, String receivedSesCode){
         Statement statement = statementService.getStatement(statementId);
+        statementService.checkStatus(statement, ApplicationStatus.PREPARE_DOCUMENTS); // после создания админского api исправить
 
         String email = statement.getClientId().getEmail();
         String savedSesCode = statement.getSesCode();
         if (Objects.equals(savedSesCode, receivedSesCode)){
-            statementService.checkStatus(statement, ApplicationStatus.PREPARE_DOCUMENTS); // после создания админского api исправить
             statementService.changeStatus(statement, ApplicationStatus.DOCUMENT_SIGNED);
             statementService.changeStatus(statement, ApplicationStatus.CREDIT_ISSUED);
             statementService.saveStatement(statement);
