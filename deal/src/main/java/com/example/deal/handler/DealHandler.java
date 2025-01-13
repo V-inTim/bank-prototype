@@ -45,11 +45,12 @@ public class DealHandler{
     }
     @ExceptionHandler(StatementException.class)
     public ResponseEntity<Map<String, String>> handleDbException(StatementException ex, WebRequest request){
-        logger.debug("DealHandler, DbException");
+        logger.debug("DealHandler, StatementException");
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(IncorrectSesCodeException.class)
     public ResponseEntity<Map<String, String>> handleIncorrectSesCodeException(IncorrectSesCodeException ex, WebRequest request){
+        logger.debug("DealHandler, IncorrectSesCodeException");
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

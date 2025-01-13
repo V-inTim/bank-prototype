@@ -61,6 +61,7 @@ public class DealService {
 
     public List<LoanOfferDto> createStatement(LoanStatementRequestDto requestData){
         Client client = clientMapper.dtoToClient(requestData);
+        logger.debug("createStatement, request to calculator");
 
         clientRepository.save(client);
         logger.debug("createStatement, save client");
@@ -88,6 +89,7 @@ public class DealService {
         statementService.changeStatus(statement, ApplicationStatus.APPROVED);
         statement.setAppliedOffer(offerMapper.dtoToAppliedOffer(dto));
         statementService.saveStatement(statement);
+        logger.debug("applyOffer, save statement");
 
         String email = statement.getClientId().getEmail();
         String text = "Ваша заявка предварительно одобрена, завершите оформление";
@@ -97,6 +99,7 @@ public class DealService {
                 .statementId(statementId)
                 .text(text).build();
         producerService.sendMessage(Topic.FINISH_REGISTRATION.getDescription(), emailMessage);
+        logger.debug("applyOffer, send message");
     }
 
     public void calculateCredit(FinishRegistrationRequestDto dto, UUID statementId){
@@ -123,6 +126,7 @@ public class DealService {
         client.setEmployment(employment);
 
         clientRepository.save(client);
+        logger.debug("calculateCredit, save client");
 
         AppliedOffer offer = statement.getAppliedOffer();
         // заполнение ScoringDataDto и получение creditDto
@@ -146,7 +150,7 @@ public class DealService {
                 .isSalaryClient(offer.getIsSalaryClient()).build();
 
         CreditDto creditDto = calculatorClient.requestCalc(scoringDataDto, statementId);
-
+        logger.debug("calculateCredit, request to calculator");
         // сохранение credit
         Credit credit = creditMapper.dtoToCredit(creditDto);
         credit.setCreditStatus(CreditStatus.CALCULATED);
@@ -172,6 +176,7 @@ public class DealService {
                 .statementId(statementId)
                 .text(text).build();
         producerService.sendMessage(Topic.CREATE_DOCUMENTS.getDescription(), emailMessage);
+        logger.debug("calculateCredit, send message");
     }
 
 
