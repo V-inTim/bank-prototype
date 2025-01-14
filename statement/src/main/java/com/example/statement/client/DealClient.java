@@ -24,11 +24,12 @@ import java.util.Map;
 @Component
 public class DealClient {
     private final RestClient restClient;
-    @Autowired
-    ObjectMapper objectMapper;
+
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public DealClient(@Value("${deal.url}") String baseUrl, RestClient.Builder restClientBuilder){
+    public DealClient(@Value("${deal.url}") String baseUrl, RestClient.Builder restClientBuilder, ObjectMapper objectMapper){
+        this.objectMapper = objectMapper;
 
         this.restClient = restClientBuilder
                 .baseUrl(baseUrl)
