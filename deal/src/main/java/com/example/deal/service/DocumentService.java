@@ -43,7 +43,7 @@ public class DocumentService {
 
         String email = statement.getClientId().getEmail();
         String text = String.format(
-            "Запрошенные документы.\n В случае согласия перейдите по ссылке: %s/%s/code",
+            "Запрошенные документы.\n В случае согласия перейдите по ссылке: %s/%s/sign",
             this.url, statementId.toString()
         );
 
@@ -66,7 +66,7 @@ public class DocumentService {
 
         String email = statement.getClientId().getEmail();
         String text = String.format(
-            "Проверочный код: %s\n Перейдите по ссылке для проверки: %s/%s/sign",
+            "Проверочный код: %s\n Перейдите по ссылке для проверки: %s/%s/code",
                 sesCode, this.url, statementId.toString()
         );
 
@@ -94,7 +94,7 @@ public class DocumentService {
                     .address(email)
                     .theme(Topic.CREDIT_ISSUED)
                     .statementId(statementId)
-                    .text("Кредит одобрен.").build();
+                    .text("Кредит выдан.").build();
             producerService.sendMessage(Topic.CREDIT_ISSUED.getDescription(), emailMessage);
             logger.debug("verifyCode, send message");
         } else {
