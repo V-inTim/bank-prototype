@@ -44,11 +44,11 @@ public class DealController {
     })
     @PostMapping(value = "/statement")
     public ResponseEntity<List<LoanOfferDto>> createStatement(@Valid @RequestBody LoanStatementRequestDto requestData) {
-        logger.info("Запрос на /statement: {}", requestData);
+        logger.debug("request /deal/statement start");
 
         List<LoanOfferDto> offers = dealService.createStatement(requestData);
 
-        logger.info("Ответ на /calculator/offers: {}", offers);
+        logger.info("request /deal/statement finish");
         return new ResponseEntity<>(offers, HttpStatus.CREATED);
     }
 
@@ -63,11 +63,11 @@ public class DealController {
     })
     @PostMapping(value = "/offer/select")
     public ResponseEntity<Void> applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
-        logger.info("Запрос на /offer/select: {}", requestData);
+        logger.debug("request /deal/offer/select start");
 
         dealService.applyOffer(requestData);
 
-        logger.info("Ответ на /calculator/offers не предусмотрен");
+        logger.debug("request /deal/offer/select finish");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -85,11 +85,11 @@ public class DealController {
     public ResponseEntity<Void> calculateCredit(
             @PathVariable UUID statementId,
             @Valid @RequestBody FinishRegistrationRequestDto requestData) {
-        logger.info("Запрос на /calculate/{statementId}: {}", requestData);
+        logger.debug("request /deal/calculate/{statementId} start");
 
         dealService.calculateCredit(requestData, statementId);
 
-        logger.info("Ответ на /calculate/{statementId} не предусмотрен");
+        logger.debug("request /deal/calculate/{statementId} finish");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
