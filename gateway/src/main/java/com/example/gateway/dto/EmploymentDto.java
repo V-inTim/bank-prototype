@@ -1,8 +1,8 @@
 package com.example.gateway.dto;
 
 
-import com.example.gateway.types.EmploymentPosition;
-import com.example.gateway.types.EmploymentStatus;
+import com.example.gateway.type.EmploymentPosition;
+import com.example.gateway.type.EmploymentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

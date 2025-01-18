@@ -1,7 +1,7 @@
 package com.example.gateway.dto;
 
-import com.example.gateway.types.Gender;
-import com.example.gateway.types.MaritalStatus;
+import com.example.gateway.type.Gender;
+import com.example.gateway.type.MaritalStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
