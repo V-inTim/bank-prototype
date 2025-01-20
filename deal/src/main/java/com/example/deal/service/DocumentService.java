@@ -81,7 +81,7 @@ public class DocumentService {
 
     public void verifyCode(UUID statementId, String receivedSesCode){
         Statement statement = statementService.getStatement(statementId);
-        statementService.checkStatus(statement, ApplicationStatus.PREPARE_DOCUMENTS); // после создания админского api исправить
+        statementService.checkStatus(statement, ApplicationStatus.DOCUMENT_CREATED); // после создания админского api исправить
 
         String email = statement.getClientId().getEmail();
         String savedSesCode = statement.getSesCode();
