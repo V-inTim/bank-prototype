@@ -1,6 +1,5 @@
 package com.example.gateway.client;
 
-import com.example.gateway.dto.FinishRegistrationRequestDto;
 import com.example.gateway.dto.LoanOfferDto;
 import com.example.gateway.dto.LoanStatementRequestDto;
 import com.example.gateway.exception.ClientException;
