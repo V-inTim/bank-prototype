@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -87,6 +88,7 @@ public class DocumentService {
         String savedSesCode = statement.getSesCode();
         if (Objects.equals(savedSesCode, receivedSesCode)){
             statementService.changeStatus(statement, ApplicationStatus.DOCUMENT_SIGNED);
+            statement.setSignDate(LocalDateTime.now());
             statementService.changeStatus(statement, ApplicationStatus.CREDIT_ISSUED);
             statementService.saveStatement(statement);
             logger.debug("verifyCode, save statement");
