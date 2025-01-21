@@ -1,9 +1,12 @@
 package com.example.deal.service;
 
 import com.example.deal.dto.EmailMessage;
+import com.example.deal.entity.Credit;
 import com.example.deal.entity.Statement;
 import com.example.deal.exception.IncorrectSesCodeException;
+import com.example.deal.repository.CreditRepository;
 import com.example.deal.type.ApplicationStatus;
+import com.example.deal.type.CreditStatus;
 import com.example.deal.type.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ public class DocumentService {
     private final KafkaProducerService producerService;
     private final SesCodeService sesCodeService;
     private final StatementService statementService;
+    private final CreditRepository creditRepository;
 
     @Value("${deal.document.url}")
     private String url;
@@ -29,10 +33,12 @@ public class DocumentService {
     @Autowired
     public DocumentService(KafkaProducerService producerService,
                            SesCodeService sesCodeService,
-                           StatementService statementService) {
+                           StatementService statementService,
+                           CreditRepository creditRepository) {
         this.producerService = producerService;
         this.sesCodeService = sesCodeService;
         this.statementService = statementService;
+        this.creditRepository = creditRepository;
     }
 
     public void sendDocuments(UUID statementId){
@@ -89,6 +95,9 @@ public class DocumentService {
         if (Objects.equals(savedSesCode, receivedSesCode)){
             statementService.changeStatus(statement, ApplicationStatus.DOCUMENT_SIGNED);
             statement.setSignDate(LocalDateTime.now());
+            Credit credit = statement.getCreditId();
+            credit.setCreditStatus(CreditStatus.ISSUED);
+            creditRepository.save(credit);
             statementService.changeStatus(statement, ApplicationStatus.CREDIT_ISSUED);
             statementService.saveStatement(statement);
             logger.debug("verifyCode, save statement");
