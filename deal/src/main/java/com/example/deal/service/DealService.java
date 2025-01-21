@@ -113,6 +113,10 @@ public class DealService {
         client.setMaritalStatus(dto.getMaritalStatus());
         client.setDependentAmount(dto.getDependentAmount());
         client.setAccountNumber(dto.getAccountNumber());
+        Passport passport = client.getPassport();
+        passport.setIssueBranch(dto.getPassportIssueBranch());
+        passport.setIssueDate(dto.getPassportIssueDate());
+        client.setPassport(passport);
 
         EmploymentDto employmentDto = dto.getEmployment();
         Employment employment = Employment.builder()
