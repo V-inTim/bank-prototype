@@ -31,6 +31,10 @@ public class StatementService {
         return optionalStatement.get();
     }
 
+    public List<Statement> getAllStatements(){
+        return statementRepository.findAll();
+    }
+
     public void changeStatus(Statement statement, ApplicationStatus status){
         statement.setStatus(status);
 
