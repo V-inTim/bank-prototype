@@ -53,7 +53,9 @@ public class DealClient {
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                         HttpStatusCode statusCode = response.getStatusCode();
-                        Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
+                        Map<String, Object> responseBody = convertBody(response);
+                        if (!responseBody.containsKey("source"))
+                            responseBody = Map.of("source", "Microservice Deal");
                         throw new DealErrorException(statusCode, responseBody);
                     })
                     .body(responseType);
@@ -77,9 +79,11 @@ public class DealClient {
                 })
                 .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
                     HttpStatusCode statusCode = response.getStatusCode();
-                    Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
+                    Map<String, Object> responseBody = convertBody(response);
+                    if (!responseBody.containsKey("source"))
+                        responseBody = Map.of("source", "Microservice Deal");
                     throw new DealErrorException(statusCode, responseBody);
-                });
+                }).toEntity(Void.class);
         } catch (RestClientException e) {
             Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
             throw new DealErrorException(HttpStatus.INTERNAL_SERVER_ERROR, responseBody);
