@@ -44,7 +44,7 @@ public class DealController {
     })
     @PostMapping(value = "/statement")
     public ResponseEntity<List<LoanOfferDto>> createStatement(@Valid @RequestBody LoanStatementRequestDto requestData) {
-        logger.debug("request /deal/statement start");
+        logger.info("request /deal/statement start");
 
         List<LoanOfferDto> offers = dealService.createStatement(requestData);
 
@@ -63,11 +63,11 @@ public class DealController {
     })
     @PostMapping(value = "/offer/select")
     public ResponseEntity<Void> applyOffer(@Valid @RequestBody LoanOfferDto requestData) {
-        logger.debug("request /deal/offer/select start");
+        logger.info("request /deal/offer/select start");
 
         dealService.applyOffer(requestData);
 
-        logger.debug("request /deal/offer/select finish");
+        logger.info("request /deal/offer/select finish");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -85,11 +85,11 @@ public class DealController {
     public ResponseEntity<Void> calculateCredit(
             @PathVariable UUID statementId,
             @Valid @RequestBody FinishRegistrationRequestDto requestData) {
-        logger.debug("request /deal/calculate/{statementId} start");
+        logger.info("request /deal/calculate/{statementId} start");
 
         dealService.calculateCredit(requestData, statementId);
 
-        logger.debug("request /deal/calculate/{statementId} finish");
+        logger.info("request /deal/calculate/{statementId} finish");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

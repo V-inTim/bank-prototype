@@ -40,11 +40,11 @@ public class DocumentController {
     })
     @PostMapping(value = "/{statementId}/send")
     public ResponseEntity<Void> sendDocuments(@PathVariable UUID statementId){
-        logger.debug("request /{statementId}/send start");
+        logger.info("request /deal/document/{statementId}/send start");
 
         this.documentService.sendDocuments(statementId);
 
-        logger.debug("request /{statementId}/send finish");
+        logger.info("request /deal/document/{statementId}/send finish");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -59,11 +59,11 @@ public class DocumentController {
     })
     @PostMapping(value = "/{statementId}/sign")
     public ResponseEntity<Void> signDocuments(@PathVariable UUID statementId){
-        logger.debug("request /{statementId}/sign start");
+        logger.info("request /deal/document/{statementId}/sign start");
 
         this.documentService.signDocuments(statementId);
 
-        logger.debug("request /{statementId}/sign finish");
+        logger.info("request /deal/document/{statementId}/sign finish");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -79,11 +79,11 @@ public class DocumentController {
     @PostMapping(value = "/{statementId}/code")
     public ResponseEntity<Void> verifyCode(@PathVariable UUID statementId, @RequestBody @Valid SesCodeDto dto){
         String sesCode = dto.getSesCode();
-        logger.debug("request /{statementId}/code start");
+        logger.info("request /deal/document/{statementId}/code start");
 
         this.documentService.verifyCode(statementId, sesCode);
 
-        logger.debug("request /{statementId}/code finish");
+        logger.info("request /deal/document/{statementId}/code finish");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

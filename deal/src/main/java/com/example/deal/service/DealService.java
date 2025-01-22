@@ -61,10 +61,10 @@ public class DealService {
 
     public List<LoanOfferDto> createStatement(LoanStatementRequestDto requestData){
         Client client = clientMapper.dtoToClient(requestData);
-        logger.debug("createStatement, request to calculator");
+        logger.info("createStatement, request to calculator");
 
         clientRepository.save(client);
-        logger.debug("createStatement, save client");
+        logger.info("createStatement, save client");
 
         Statement statement = Statement.builder()
                 .creationDate(LocalDateTime.now())
@@ -73,7 +73,7 @@ public class DealService {
                 .statusHistory(new ArrayList<>())
                 .build();
         statementService.saveStatement(statement);
-        logger.debug("createStatement, save statement");
+        logger.info("createStatement, save statement");
 
         List<LoanOfferDto> offers = calculatorClient.requestOffers(requestData);
         offers.forEach(offer -> offer.setStatementId(statement.getStatementId()));
@@ -89,7 +89,7 @@ public class DealService {
         statementService.changeStatus(statement, ApplicationStatus.APPROVED);
         statement.setAppliedOffer(offerMapper.dtoToAppliedOffer(dto));
         statementService.saveStatement(statement);
-        logger.debug("applyOffer, save statement");
+        logger.info("applyOffer, save statement");
 
         String email = statement.getClientId().getEmail();
         String text = "Ваша заявка предварительно одобрена, завершите оформление";
@@ -99,7 +99,7 @@ public class DealService {
                 .statementId(statementId)
                 .text(text).build();
         producerService.sendMessage(Topic.FINISH_REGISTRATION.getDescription(), emailMessage);
-        logger.debug("applyOffer, send message");
+        logger.info("applyOffer, send message");
     }
 
     public void calculateCredit(FinishRegistrationRequestDto dto, UUID statementId){
@@ -130,7 +130,7 @@ public class DealService {
         client.setEmployment(employment);
 
         clientRepository.save(client);
-        logger.debug("calculateCredit, save client");
+        logger.info("calculateCredit, save client");
 
         AppliedOffer offer = statement.getAppliedOffer();
         // заполнение ScoringDataDto и получение creditDto
@@ -154,20 +154,20 @@ public class DealService {
                 .isSalaryClient(offer.getIsSalaryClient()).build();
 
         CreditDto creditDto = calculatorClient.requestCalc(scoringDataDto, statementId);
-        logger.debug("calculateCredit, request to calculator");
+        logger.info("calculateCredit, request to calculator");
         // сохранение credit
         Credit credit = creditMapper.dtoToCredit(creditDto);
         credit.setCreditStatus(CreditStatus.CALCULATED);
 
         credit = creditRepository.save(credit);
-        logger.debug("calculateCredit, save credit");
+        logger.info("calculateCredit, save credit");
 
         // сохранение statement
         statement.setCreditId(credit);
         statementService.changeStatus(statement, ApplicationStatus.CC_APPROVED);
         statementService.saveStatement(statement);
 
-        logger.debug("calculateCredit, save statement");
+        logger.info("calculateCredit, save statement");
 
         String email = statement.getClientId().getEmail();
         String text = String.format(
@@ -180,7 +180,7 @@ public class DealService {
                 .statementId(statementId)
                 .text(text).build();
         producerService.sendMessage(Topic.CREATE_DOCUMENTS.getDescription(), emailMessage);
-        logger.debug("calculateCredit, send message");
+        logger.info("calculateCredit, send message");
     }
 
 
