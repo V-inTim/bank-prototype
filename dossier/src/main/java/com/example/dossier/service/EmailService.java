@@ -1,6 +1,8 @@
 package com.example.dossier.service;
 
+import com.example.dossier.client.DealClient;
 import com.example.dossier.dto.EmailMessage;
+import com.example.dossier.type.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +16,16 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender emailSender;
+    private final DealClient dealClient;
     @Value("${spring.mail.username}")
     private String username;
 
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
-    public EmailService(JavaMailSender emailSender) {
+    public EmailService(JavaMailSender emailSender, DealClient dealClient) {
         this.emailSender = emailSender;
+        this.dealClient = dealClient;
     }
 
     public void sendEmailMessage(EmailMessage emailMessage) {
@@ -33,9 +37,11 @@ public class EmailService {
         simpleMailMessage.setText(emailMessage.getText());
         try {
             emailSender.send(simpleMailMessage);
-            logger.debug("Email sent successfully");
+            logger.info("Email sent successfully");
+            if (emailMessage.getTheme() == Topic.SEND_DOCUMENTS)
+                dealClient.requestChangeStatus(emailMessage.getStatementId());
         } catch (MailSendException e) {
-            logger.debug("Error sending email");
+            logger.info("Error sending email");
         }
     }
 }
