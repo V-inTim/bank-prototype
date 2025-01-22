@@ -3,6 +3,7 @@ package com.example.gateway.client;
 import com.example.gateway.dto.FinishRegistrationRequestDto;
 import com.example.gateway.dto.SesCodeDto;
 import com.example.gateway.exception.ClientException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +55,7 @@ public class DealClient {
                     if (!responseBody.containsKey("source"))
                         responseBody = Map.of("source", "Microservice Deal");
                     throw new ClientException(statusCode, responseBody);
-                });
+                }).toEntity(Void.class);
         } catch (RestClientException e) {
             Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
             throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, responseBody);
@@ -79,7 +80,7 @@ public class DealClient {
                     if (!responseBody.containsKey("source"))
                         responseBody = Map.of("source", "Microservice Deal");
                     throw new ClientException(statusCode, responseBody);
-                });
+                }).toEntity(Void.class);
         } catch (RestClientException e) {
             Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
             throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, responseBody);
@@ -105,7 +106,8 @@ public class DealClient {
                         if (!responseBody.containsKey("source"))
                             responseBody = Map.of("source", "Microservice Deal");
                         throw new ClientException(statusCode, responseBody);
-                    });
+                    })
+                    .toEntity(Void.class);
         } catch (RestClientException e) {
             Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
             throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, responseBody);
@@ -115,6 +117,9 @@ public class DealClient {
     public void requestDocumentsCode(UUID statementId, SesCodeDto dto) {
 
         try {
+            System.out.println("Request URI: " + String.format("/document/%s/code", statementId));
+            System.out.println("DTO: " + objectMapper.writeValueAsString(dto));
+
             restClient.post()
                     .uri(String.format("/document/%s/code", statementId.toString()))
                     .contentType(MediaType.APPLICATION_JSON)
@@ -132,10 +137,14 @@ public class DealClient {
                         if (!responseBody.containsKey("source"))
                             responseBody = Map.of("source", "Microservice Deal");
                         throw new ClientException(statusCode, responseBody);
-                    });
+                    })
+                    .toEntity(Void.class);// Завершающая операция, чтобы запрос был выполнен
+
         } catch (RestClientException e) {
             Map<String, Object> responseBody = Map.of("source", "Microservice Deal");
             throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, responseBody);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 

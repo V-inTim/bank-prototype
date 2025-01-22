@@ -85,7 +85,7 @@ public class StatementClient {
                         if (!responseBody.containsKey("source"))
                             responseBody = Map.of("source", "Microservice Statement");
                         throw new ClientException(statusCode, responseBody);
-                    });
+                    }).toEntity(Void.class);
         } catch (RestClientException e) {
             Map<String, Object> responseBody = Map.of("source", "Microservice Statement");
             throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, responseBody);
