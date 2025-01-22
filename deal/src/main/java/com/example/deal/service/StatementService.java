@@ -18,6 +18,7 @@ import java.util.UUID;
 public class StatementService {
     private final StatementRepository statementRepository;
 
+
     @Autowired
     public StatementService(StatementRepository statementRepository) {
         this.statementRepository = statementRepository;
@@ -29,6 +30,10 @@ public class StatementService {
             throw new StatementException("Ресурс с данным id не сущетсвует.");
         }
         return optionalStatement.get();
+    }
+
+    public List<Statement> getAllStatements(){
+        return statementRepository.findAll();
     }
 
     public void changeStatus(Statement statement, ApplicationStatus status){

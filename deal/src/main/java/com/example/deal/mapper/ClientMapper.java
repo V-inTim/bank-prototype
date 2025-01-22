@@ -1,5 +1,6 @@
 package com.example.deal.mapper;
 
+import com.example.deal.dto.ClientDto;
 import com.example.deal.dto.LoanStatementRequestDto;
 import com.example.deal.entity.Client;
 import com.example.deal.entity.Employment;
@@ -25,6 +26,9 @@ public interface ClientMapper {
     @Mapping(target = "passport", expression = "java(createPassport(dto))")
     @Mapping(target = "employment", expression = "java(createEmployment())")
     Client dtoToClient(LoanStatementRequestDto dto);
+
+
+    ClientDto clientToDto(Client client);
 
     default Passport createPassport(LoanStatementRequestDto dto){
         return Passport.builder().series(dto.getPassportSeries())
