@@ -48,7 +48,7 @@ public class StatementController {
         logger.info("Запрос на /statement");
 
         List<LoanOfferDto> offers = service.createStatement(requestDto);
-        logger.debug("Сгенерированный List<LoanOfferDto>: {}", offers);
+        logger.info("Сгенерированный List<LoanOfferDto>: {}", offers);
         logger.info("Ответ на /statement");
         return new ResponseEntity<List<LoanOfferDto>>(offers, HttpStatus.CREATED);
     }
