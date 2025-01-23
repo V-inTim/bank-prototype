@@ -21,4 +21,14 @@ public interface CreditMapper {
     @Mapping(target = "creditId", ignore = true)
     Credit dtoToCredit(CreditDto dto);
 
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "term", source = "term")
+    @Mapping(target = "monthlyPayment", source = "monthlyPayment")
+    @Mapping(target = "rate", source = "rate")
+    @Mapping(target = "psk", source = "psk")
+    @Mapping(target = "isInsuranceEnabled", source = "insuranceEnabled")
+    @Mapping(target = "isSalaryClient", source = "salaryClient")
+    @Mapping(target = "paymentSchedule", source = "paymentSchedule")
+    CreditDto creditToDto(Credit credit);
+
 }

@@ -1,9 +1,12 @@
 package com.example.deal.service;
 
 import com.example.deal.dto.EmailMessage;
+import com.example.deal.entity.Credit;
 import com.example.deal.entity.Statement;
 import com.example.deal.exception.IncorrectSesCodeException;
+import com.example.deal.repository.CreditRepository;
 import com.example.deal.type.ApplicationStatus;
+import com.example.deal.type.CreditStatus;
 import com.example.deal.type.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,6 +23,7 @@ public class DocumentService {
     private final KafkaProducerService producerService;
     private final SesCodeService sesCodeService;
     private final StatementService statementService;
+    private final CreditRepository creditRepository;
 
     @Value("${deal.document.url}")
     private String url;
@@ -28,10 +33,12 @@ public class DocumentService {
     @Autowired
     public DocumentService(KafkaProducerService producerService,
                            SesCodeService sesCodeService,
-                           StatementService statementService) {
+                           StatementService statementService,
+                           CreditRepository creditRepository) {
         this.producerService = producerService;
         this.sesCodeService = sesCodeService;
         this.statementService = statementService;
+        this.creditRepository = creditRepository;
     }
 
     public void sendDocuments(UUID statementId){
@@ -39,7 +46,7 @@ public class DocumentService {
         statementService.checkStatus(statement, ApplicationStatus.CC_APPROVED);
         statementService.changeStatus(statement, ApplicationStatus.PREPARE_DOCUMENTS);
         statementService.saveStatement(statement);
-        logger.debug("sendDocuments, save statement");
+        logger.info("sendDocuments, save statement");
 
         String email = statement.getClientId().getEmail();
         String text = String.format(
@@ -53,7 +60,7 @@ public class DocumentService {
                 .statementId(statementId)
                 .text(text).build();
         producerService.sendMessage(Topic.SEND_DOCUMENTS.getDescription(), emailMessage);
-        logger.debug("sendDocuments, send message");
+        logger.info("sendDocuments, send message");
     }
 
     public void signDocuments(UUID statementId){
@@ -62,7 +69,7 @@ public class DocumentService {
         String sesCode = sesCodeService.generateNumericCode(6);
         statement.setSesCode(sesCode);
         statementService.saveStatement(statement);
-        logger.debug("signDocuments, save statement");
+        logger.info("signDocuments, save statement");
 
         String email = statement.getClientId().getEmail();
         String text = String.format(
@@ -76,27 +83,32 @@ public class DocumentService {
                 .statementId(statementId)
                 .text(text).build();
         producerService.sendMessage(Topic.SEND_SES.getDescription(), emailMessage);
-        logger.debug("signDocuments, send message");
+        logger.info("signDocuments, send message");
     }
 
     public void verifyCode(UUID statementId, String receivedSesCode){
         Statement statement = statementService.getStatement(statementId);
-        statementService.checkStatus(statement, ApplicationStatus.PREPARE_DOCUMENTS); // после создания админского api исправить
+        statementService.checkStatus(statement, ApplicationStatus.DOCUMENT_CREATED); // после создания админского api исправить
 
         String email = statement.getClientId().getEmail();
         String savedSesCode = statement.getSesCode();
         if (Objects.equals(savedSesCode, receivedSesCode)){
             statementService.changeStatus(statement, ApplicationStatus.DOCUMENT_SIGNED);
+            statement.setSignDate(LocalDateTime.now());
+            Credit credit = statement.getCreditId();
+            credit.setCreditStatus(CreditStatus.ISSUED);
+            logger.info("verifyCode, save credit");
+            creditRepository.save(credit);
             statementService.changeStatus(statement, ApplicationStatus.CREDIT_ISSUED);
             statementService.saveStatement(statement);
-            logger.debug("verifyCode, save statement");
+            logger.info("verifyCode, save statement");
             EmailMessage emailMessage = EmailMessage.builder()
                     .address(email)
                     .theme(Topic.CREDIT_ISSUED)
                     .statementId(statementId)
                     .text("Кредит выдан.").build();
             producerService.sendMessage(Topic.CREDIT_ISSUED.getDescription(), emailMessage);
-            logger.debug("verifyCode, send message");
+            logger.info("verifyCode, send message");
         } else {
             throw new IncorrectSesCodeException("Неправильный проверочный код.");
         }
