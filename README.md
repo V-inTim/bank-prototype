@@ -18,8 +18,69 @@
 9. Клиент может отказаться от условий или согласиться. Если согласился, МС Досье на почту отправляет код и ссылку на подписание документов, куда клиент должен отправить полученный код в МС Сделка.
 10. Если полученный код совпадает с отправленным, МС Сделка выдает кредит (меняет статус сущности "Кредит" на ISSUED, а статус заявки на CREDIT_ISSUED).
 
-## Микросервис Калькулятор.
+## Микросервис Калькулятор (Calculator).
 ### Задачи
-1. Проводит скоринг
-### API
-- 
+Проводит скоринг.
+### API микросервиса
+#### POST: /calculator/offers 
+Расчёт возможных условий кредита.
+**Request:** LoanStatementRequestDto
+**Response:** список LoanOfferDto
+
+#### POST: /calculator/calc 
+Валидация присланных данных, скоринг данных, полный расчет параметров кредита.
+**Request:** ScoringDataDto
+**Response:** CreditDto
+
+## Микросервис Сделка (Deal).
+### Задачи
+Взаимодейтсвует с базой данных, сохраняет заявки, обновляет их состояние.
+### API микросервиса
+#### POST: /deal/statement
+Расчёт возможных условий кредита.
+**Request:** LoanStatementRequestDto
+**Response:** список LoanOfferDto
+
+#### POST: /deal/offer/select
+Выбор одного из предложений.
+**Request:** LoanOfferDto
+**Response:** Void
+
+#### POST: /deal/calculate/{statementId}
+Завершение регистрации + полный подсчёт кредита.
+**Request:** FinishRegistrationRequestDto
+**Response:** Void
+
+---
+#### POST: /deal/document/{statementId}/send
+Запрос на отправку документов.
+**Request:** Void
+**Response:** Void
+
+#### POST: /deal/document/{statementId}/sign
+Запрос на подписание документов.
+**Request:** Void
+**Response:** Void
+
+#### POST: /deal/document/{statementId}/code
+Подписание документов.
+**Request:** Void
+**Response:** Void
+
+## Микросервис Заявка (Statement).
+### Задачи
+Проводит прескоринг.
+### API микросервиса
+#### POST: /statement 
+Прескоринг + запрос на расчёт возможных условий кредита.
+**Request:** LoanStatementRequestDto
+**Response:** список LoanOfferDto
+
+#### POST: /calculator/calc 
+Выбор одного из предложений.
+**Request:** LoanOfferDto
+**Response:** Void
+
+## Микросервис Досье (Dossier).
+### Задачи
+Получение сообщений по Kafka и отпрвка их на почту пользователям.
