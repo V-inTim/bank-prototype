@@ -22,7 +22,7 @@ public class KafkaConsumerService {
     @KafkaListener(topics = {"finish-registration", "create-documents", "send-documents",
             "send-ses", "credit-issued", "statement-denied"}, groupId = "emailMessage")
     public void consume(EmailMessage message) {
-        logger.debug("consume, {}", message.getTheme());
+        logger.info("consume, {}", message.getTheme());
         emailService.sendEmailMessage(message);
     }
 }
