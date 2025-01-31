@@ -23,25 +23,25 @@ public class EmploymentDto {
             regexp = "UNEMPLOYED|SELF_EMPLOYED|BUSINESS_OWNER|EMPLOYED",
             message = "Статус должен быть один из заявленных."
     )
-    EmploymentStatus employmentStatus;
+    private EmploymentStatus employmentStatus;
     @Schema(description = "ИНН", example = "234644576")
     @NotNull
-    String employerINN;
+    private String employerINN;
     @Schema(description = "Зарплата", example = "32454")
     @NotNull
     @DecimalMin(value = "0.00", message = "Сумма кредита должна быть отрицательной.")
-    BigDecimal salary;
+    private BigDecimal salary;
     @Schema(description = "Позиция занятости", example = "MID_MANAGER")
     @NotNull
     @EnumNamePattern(
             regexp = "WORKER|MID_MANAGER|TOP_MANAGER|OWNER",
             message = "Позиция должна быть одна из заявленных."
     )
-    EmploymentPosition position;
+    private EmploymentPosition position;
     @Schema(description = "Рабочий опыт общий", example = "true")
     @NotNull
-    Integer workExperienceTotal;
+    private Integer workExperienceTotal;
     @Schema(description = "Рабочий опыт текущий", example = "false")
     @NotNull
-    Integer workExperienceCurrent;
+    private Integer workExperienceCurrent;
 }

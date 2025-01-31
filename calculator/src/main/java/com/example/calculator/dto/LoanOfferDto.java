@@ -16,20 +16,20 @@ import java.util.UUID;
 @Builder
 public class LoanOfferDto {
     @Schema(description = "Идентификатор")
-    UUID statementId;
+    private UUID statementId;
     @Schema(description = "Запрашиваемая сумма", example = "100000")
-    BigDecimal requestedAmount;
+    private BigDecimal requestedAmount;
     @Schema(description = "Запрашивая сумма с доп учетом", example = "120000")
-    BigDecimal totalAmount;
+    private BigDecimal totalAmount;
     @Schema(description = "Срок", example = "12")
-    Integer term;
+    private Integer term;
     @Schema(description = "Ежемесячная сумма", example = "30000")
-    BigDecimal monthlyPayment;
+    private BigDecimal monthlyPayment;
     @Schema(description = "Ставка", example = "0.12")
-    BigDecimal rate;
+    private BigDecimal rate;
     @Schema(description = "Есть ли страховка", example = "true")
-    Boolean isInsuranceEnabled;
+    private Boolean isInsuranceEnabled;
     @Schema(description = "Есть ли постоянная зарплата", example = "false")
-    Boolean isSalaryClient;
+    private Boolean isSalaryClient;
 }
 
