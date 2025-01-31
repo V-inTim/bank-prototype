@@ -22,23 +22,23 @@ import java.time.LocalDate;
 public class ScoringDataDto {
     @NotNull
     @Min(value = 20000, message = "Сумма кредита должна быть больше или равна 20000.")
-    BigDecimal amount;
+    private BigDecimal amount;
 
     @NotNull
     @Min(value = 6, message = "Срок кредита должен быть больше или равен 6.")
-    Integer term;
+    private Integer term;
 
     @NotNull
     @Pattern(regexp = "^[a-zA-Z]{2,30}$", message = "Имя - от 2 до 30 латинских букв.")
-    String firstName;
+    private String firstName;
 
     @NotNull
     @Pattern(regexp = "^[a-zA-Z]{2,30}$", message = "Фамилия - от 2 до 30 латинских букв.")
-    String lastName;
+    private String lastName;
 
     @NotNull
     @Pattern(regexp = "^[a-zA-Z]{2,30}$", message = "Отчество - от 2 до 30 латинских букв.")
-    String middleName; // может и не быть
+    private String middleName; // может и не быть
 
 
     @NotNull
@@ -46,21 +46,21 @@ public class ScoringDataDto {
             regexp = "MALE|FEMALE|NON_BINARY",
             message = "Гендер один из 3 заявленных."
     )
-    Gender gender;
+    private Gender gender;
 
     @NotNull
-    LocalDate birthdate;
+    private LocalDate birthdate;
 
     @NotNull
     @Pattern(regexp = "^[0-9]{4}$", message = "Серия - 4 символа.")
-    String passportSeries;
+    private String passportSeries;
 
     @NotNull
     @Pattern(regexp = "^[0-9]{6}$", message = "Номер - 6 символов.")
-    String passportNumber;
+    private String passportNumber;
 
     @NotNull
-    LocalDate passportIssueDate;
+    private LocalDate passportIssueDate;
 
     @NotNull
     String passportIssueBranch;
@@ -70,20 +70,20 @@ public class ScoringDataDto {
             regexp = "MARRIED|DIVORCED|SINGLE|WIDOWED_WIDOWED",
             message = "Статус один из 4 заявленных."
     )
-    MaritalStatus maritalStatus;
+    private MaritalStatus maritalStatus;
 
     @NotNull
-    Integer dependentAmount;
+    private Integer dependentAmount;
 
     @NotNull
-    EmploymentDto employment;
+    private EmploymentDto employment;
 
     @NotNull
-    String accountNumber;
+    private String accountNumber;
 
     @NotNull
-    Boolean isInsuranceEnabled;
+    private Boolean isInsuranceEnabled;
 
     @NotNull
-    Boolean isSalaryClient;
+    private Boolean isSalaryClient;
 }

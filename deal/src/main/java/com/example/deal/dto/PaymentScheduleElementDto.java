@@ -18,25 +18,25 @@ import java.time.LocalDate;
 public class PaymentScheduleElementDto {
     @Schema(description = "Номер платежа", example = "1")
     @NotNull
-    Integer number;
+    private Integer number;
 
     @Schema(description = "Дата платежа", example = "2024-12-18")
     @NotNull
-    LocalDate date;
+    private LocalDate date;
 
     @Schema(description = "Сумма платежа", example = "2000")
     @NotNull
-    BigDecimal totalPayment;
+    private BigDecimal totalPayment;
 
     @Schema(description = "Процентная часть", example = "400")
     @NotNull
-    BigDecimal interestPayment;
+    private BigDecimal interestPayment;
 
     @Schema(description = "Часть от суммы", example = "1600")
     @NotNull
-    BigDecimal debtPayment;
+    private BigDecimal debtPayment;
 
     @Schema(description = "Оставшаяся", example = "21000")
     @NotNull
-    BigDecimal remainingDebt;
+    private BigDecimal remainingDebt;
 }

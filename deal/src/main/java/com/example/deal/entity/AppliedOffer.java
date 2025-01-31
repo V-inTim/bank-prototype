@@ -13,17 +13,17 @@ import java.math.BigDecimal;
 @Builder
 public class AppliedOffer {
 
-    BigDecimal requestedAmount;
+    private BigDecimal requestedAmount;
 
-    BigDecimal totalAmount;
+    private BigDecimal totalAmount;
 
-    Integer term;
+    private Integer term;
 
-    BigDecimal monthlyPayment;
+    private BigDecimal monthlyPayment;
 
-    BigDecimal rate;
+    private BigDecimal rate;
 
-    Boolean isInsuranceEnabled;
+    private Boolean isInsuranceEnabled;
 
-    Boolean isSalaryClient;
+    private Boolean isSalaryClient;
 }

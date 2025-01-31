@@ -22,16 +22,16 @@ public class EmploymentDto {
             regexp = "UNEMPLOYED|SELF_EMPLOYED|BUSINESS_OWNER|EMPLOYED",
             message = "Статус должен быть один из заявленных."
     )
-    EmploymentStatus employmentStatus;
+    private EmploymentStatus employmentStatus;
 
     @Schema(description = "ИНН", example = "234644576")
     @NotNull(message = "employerINN должен быть передан.")
-    String employerINN;
+    private String employerINN;
 
     @Schema(description = "Зарплата", example = "32454")
     @NotNull(message = "salary должен быть передан.")
     @DecimalMin(value = "0.00", message = "Сумма кредита должна быть отрицательной.")
-    BigDecimal salary;
+    private BigDecimal salary;
 
     @Schema(description = "Позиция занятости", example = "MID_MANAGER")
     @NotNull(message = "position должен быть передан.")
@@ -39,13 +39,13 @@ public class EmploymentDto {
             regexp = "WORKER|MID_MANAGER|TOP_MANAGER|OWNER",
             message = "Позиция должна быть одна из заявленных."
     )
-    EmploymentPosition position;
+    private EmploymentPosition position;
 
     @Schema(description = "Рабочий опыт общий", example = "24")
     @NotNull(message = "workExperienceTotal должен быть передан.")
-    Integer workExperienceTotal;
+    private Integer workExperienceTotal;
 
     @Schema(description = "Рабочий опыт текущий", example = "20")
     @NotNull(message = "workExperienceCurrent должен быть передан.")
-    Integer workExperienceCurrent;
+    private Integer workExperienceCurrent;
 }
