@@ -14,15 +14,15 @@ import java.time.LocalDate;
 @Builder
 public class PaymentScheduleElement {
 
-    Integer number;
+    private Integer number;
 
-    LocalDate date;
+    private LocalDate date;
 
-    BigDecimal totalPayment;
+    private BigDecimal totalPayment;
 
-    BigDecimal interestPayment;
+    private BigDecimal interestPayment;
 
-    BigDecimal debtPayment;
+    private BigDecimal debtPayment;
 
-    BigDecimal remainingDebt;
+    private BigDecimal remainingDebt;
 }

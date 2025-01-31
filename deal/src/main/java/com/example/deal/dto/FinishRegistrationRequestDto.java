@@ -26,7 +26,7 @@ public class FinishRegistrationRequestDto {
             regexp = "MALE|FEMALE|NON_BINARY",
             message = "Гендер должен быть один из 3."
     )
-    Gender gender;
+    private Gender gender;
 
     @NotNull(message = "maritalStatus должен быть передан.")
     @Schema(description = "Семейный статус")
@@ -34,28 +34,28 @@ public class FinishRegistrationRequestDto {
             regexp = "MARRIED|DIVORCED|SINGLE|WIDOWED_WIDOWED",
             message = "Статус один из 4 заявленных."
     )
-    MaritalStatus maritalStatus;
+    private MaritalStatus maritalStatus;
 
     @NotNull(message = "dependentAmount должен быть передан.")
     @Schema(description = "Дополнительная сумма")
-    Integer dependentAmount;
+    private Integer dependentAmount;
 
     @NotNull(message = "passportIssueDate должен быть передан.")
     @Schema(description = "Дата выдачи")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate passportIssueDate;
+    private LocalDate passportIssueDate;
 
     @NotNull(message = "IssueBranch должен быть передан.")
     @Schema(description = "Отдел выдачи")
-    String passportIssueBranch;
+    private String passportIssueBranch;
 
 
     @NotNull(message = "IssueBranch должен быть передан.")
     @Schema(description = "Занятость")
-    EmploymentDto employment;
+    private EmploymentDto employment;
 
     @NotNull(message = "accountNumber должен быть передан.")
     @Schema(description = "Личный номер")
-    String accountNumber;
+    private String accountNumber;
 }
