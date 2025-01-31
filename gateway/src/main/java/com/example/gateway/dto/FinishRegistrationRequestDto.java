@@ -17,23 +17,23 @@ import java.time.LocalDate;
 @Builder
 public class FinishRegistrationRequestDto {
     @Schema(description = "Гендер")
-    Gender gender;
+    private Gender gender;
 
     @Schema(description = "Семейный статус")
-    MaritalStatus maritalStatus;
+    private MaritalStatus maritalStatus;
 
     @Schema(description = "Дополнительная сумма")
-    Integer dependentAmount;
+    private Integer dependentAmount;
 
     @Schema(description = "Дата выдачи")
-    LocalDate passportIssueDate;
+    private LocalDate passportIssueDate;
 
     @Schema(description = "Отдел выдачи")
-    String passportIssueBranch;
+    private String passportIssueBranch;
 
     @Schema(description = "Занятость")
-    EmploymentDto employment;
+    private EmploymentDto employment;
 
     @Schema(description = "Личный номер")
-    String accountNumber;
+    private String accountNumber;
 }
