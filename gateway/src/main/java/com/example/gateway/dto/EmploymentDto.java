@@ -15,20 +15,20 @@ import java.math.BigDecimal;
 @Data
 public class EmploymentDto {
     @Schema(description = "Статус занятости", example = "SELF_EMPLOYED")
-    EmploymentStatus employmentStatus;
+    private EmploymentStatus employmentStatus;
 
     @Schema(description = "ИНН", example = "234644576")
-    String employerINN;
+    private String employerINN;
 
     @Schema(description = "Зарплата", example = "32454")
-    BigDecimal salary;
+    private BigDecimal salary;
 
     @Schema(description = "Позиция занятости", example = "MID_MANAGER")
-    EmploymentPosition position;
+    private EmploymentPosition position;
 
     @Schema(description = "Рабочий опыт общий", example = "24")
-    Integer workExperienceTotal;
+    private Integer workExperienceTotal;
 
     @Schema(description = "Рабочий опыт текущий", example = "20")
-    Integer workExperienceCurrent;
+    private Integer workExperienceCurrent;
 }
