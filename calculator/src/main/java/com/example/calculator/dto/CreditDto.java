@@ -18,28 +18,28 @@ import java.util.List;
 public class CreditDto {
     @Schema(description = "Сумма кредита", example = "100000")
     @NotNull
-    BigDecimal amount;
+    private BigDecimal amount;
 
     @Schema(description = "Срок", example = "10")
     @NotNull
-    Integer term;
+    private Integer term;
 
     @Schema(description = "Ежемесячная сумма", example = "10000")
     @NotNull
-    BigDecimal monthlyPayment;
+    private BigDecimal monthlyPayment;
     @Schema(description = "Ставка", example = "0.15")
     @NotNull
-    BigDecimal rate;
+    private BigDecimal rate;
     @Schema(description = "Полная сумма кредита", example = "110000")
     @NotNull
-    BigDecimal psk;
+    private BigDecimal psk;
     @Schema(description = "Есть ли страховка", example = "true")
     @NotNull
-    Boolean isInsuranceEnabled;
+    private Boolean isInsuranceEnabled;
     @Schema(description = "Есть ли постоянная зарплата", example = "false")
     @NotNull
-    Boolean isSalaryClient;
+    private Boolean isSalaryClient;
     @Schema(description = "График")
     @NotNull
-    List<PaymentScheduleElementDto> paymentSchedule;
+    private List<PaymentScheduleElementDto> paymentSchedule;
 }
