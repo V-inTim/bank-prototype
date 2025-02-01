@@ -33,11 +33,58 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_CREATE_TOPICS: "finish-registration:1:1,create-documents:1:1,send-documents:1:1,send-ses:1:1,credit-issued:1:1,statement-denied:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092
       
     depends_on:
       - zookeeper
+
+  calculator:
+    build: ./calculator
+    container_name: calculator
+    ports:
+      - "8080:8080"
+
+  deal:
+    build: ./deal
+    container_name: deal
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/bank
+      DB_USERNAME: take
+      DB_PASSWORD: take
+      CALCULATOR_URL: http://calculator:8080/calculator
+      KAFKA_URL: kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+
+  statement:
+    build: ./statement
+    container_name: statement
+    ports:
+      - "8082:8082"
+    environment:
+      DEAL_URL: http://deal:8081/deal
+  dossier:
+    build: ./dossier
+    container_name: dossier
+    ports:
+      - "8083:8083"
+    environment:
+      KAFKA_URL: kafka:9092
+      DEAL_DOCUMENT_URL: http://deal:8081/deal/admin
+    depends_on:
+      - kafka
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    ports:
+      - "8084:8084"
+    environment:
+      DEAL_URL: http://deal:8081/deal
+      STATEMENT_URL: http://statement:8082/statement
 
 volumes:
   postgres_data:
